@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
-  <rect width="600" height="400" fill="#f5f3ff"/>
-  <rect x="40" y="40" width="520" height="320" rx="24" fill="#e9e2ff"/>
-  <text x="50%" y="45%" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" fill="#6d28d9" font-weight="700">Feijao Carioca</text>
-  <text x="50%" y="58%" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#5b21b6">Pacote 1kg</text>
-</svg>
