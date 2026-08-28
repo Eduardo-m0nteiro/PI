@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Entre na sua conta Invenire Delivery.">
+    <meta name="theme-color" content="#0f9d58">
+    <title>Entrar — Invenire Delivery</title>
+    <link rel="icon" href="assets/produto.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="topo">
+        <div class="container">
+            <nav class="topo-acoes" aria-label="Ações rápidas">
+                <a href="index.html" class="marca">🛒 Invenire</a>
+                <div class="topo-botoes">
+                    <button class="botao secundario" id="alternar-tema" aria-pressed="false">🌙 Tema escuro</button>
+                </div>
+            </nav>
+            <h1>Bem-vindo de volta</h1>
+            <p>Entre na sua conta para finalizar suas compras.</p>
+        </div>
+    </header>
+
+    <main class="container pagina-auth" id="conteudo">
+        <section class="bloco cartao-auth">
+            <h2>Entrar</h2>
+            <form id="form-login" novalidate>
+                <label>E-mail
+                    <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="voce@email.com">
+                </label>
+                <label>Senha
+                    <input type="password" id="login-senha" name="senha" required autocomplete="current-password" placeholder="Sua senha">
+                </label>
+                <p class="erro-form" id="erro-form" hidden></p>
+                <button type="submit" class="botao" id="botao-login">Entrar</button>
+            </form>
+            <p class="texto-auxiliar-auth">
+                Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a>
+            </p>
+        </section>
+    </main>
+
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+
+    <script src="auth-cliente.js"></script>
+</body>
+</html>

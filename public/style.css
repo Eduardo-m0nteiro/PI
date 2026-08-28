@@ -844,3 +844,65 @@ body.tema-escuro .confirmacao .pedido-numero {
         justify-content: center;
     }
 }
+
+/* ===== Área de conta (cabeçalho) ===== */
+.conta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.conta-saudacao {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* ===== Páginas de autenticação (login / cadastro) ===== */
+.pagina-auth {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0 48px;
+}
+
+.cartao-auth {
+    width: min(420px, 100%);
+}
+
+.cartao-auth form {
+    display: grid;
+    gap: 14px;
+    margin-top: 4px;
+}
+
+.cartao-auth label {
+    display: grid;
+    gap: 4px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.cartao-auth button[type="submit"] {
+    margin-top: 4px;
+    width: 100%;
+}
+
+.texto-auxiliar-auth {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+}
+
+.texto-auxiliar-auth a {
+    color: var(--verde-escuro);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+body.tema-escuro .texto-auxiliar-auth a {
+    color: #86efac;
+}
+
+.texto-auxiliar-auth a:hover {
+    text-decoration: underline;
+}

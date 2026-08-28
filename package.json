@@ -1,0 +1,19 @@
+{
+  "name": "invenire-delivery",
+  "version": "1.0.0",
+  "description": "Invenire Delivery - supermercado online com login e autenticacao real (Node + SQLite)",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "express": "^4.19.2",
+    "express-session": "^1.18.1"
+  }
+}

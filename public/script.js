@@ -308,6 +308,13 @@ function abrirCheckout() {
         notificar("Seu carrinho está vazio.", "erro");
         return;
     }
+    if (!window.usuarioLogado) {
+        notificar("Faça login para finalizar seu pedido.", "erro");
+        setTimeout(() => {
+            window.location.href = "login.html?redirecionar=index.html";
+        }, 1200);
+        return;
+    }
     const { subtotal, desconto, frete, total } = calcularTotais();
     checkoutResumo.innerHTML = `
         <div class="linha-resumo"><span>Subtotal</span><span>${formatarMoeda(subtotal)}</span></div>
@@ -478,3 +485,55 @@ function init() {
 }
 
 init();
+
+// =========================================================
+//  Autenticação (login / cadastro / sessão)
+// =========================================================
+const areaConta = $("area-conta");
+window.usuarioLogado = null;
+
+async function verificarSessao() {
+    try {
+        const resposta = await fetch("/api/me");
+        if (resposta.ok) {
+            const usuario = await resposta.json();
+            renderizarContaLogada(usuario);
+        } else {
+            renderizarContaDeslogada();
+        }
+    } catch {
+        // Sem servidor rodando (ex.: página aberta direto via arquivo) — trata como deslogado.
+        renderizarContaDeslogada();
+    }
+}
+
+function renderizarContaLogada(usuario) {
+    window.usuarioLogado = usuario;
+    if (!areaConta) return;
+    const primeiroNome = usuario.nome.split(" ")[0];
+    areaConta.innerHTML = `
+        <span class="conta-saudacao">Olá, ${primeiroNome}</span>
+        <button class="botao secundario" id="botao-sair">Sair</button>
+    `;
+    const botaoSair = $("botao-sair");
+    if (botaoSair) botaoSair.addEventListener("click", encerrarSessao);
+}
+
+function renderizarContaDeslogada() {
+    window.usuarioLogado = null;
+    if (!areaConta) return;
+    areaConta.innerHTML = `<a href="login.html" class="botao secundario">Entrar</a>`;
+}
+
+async function encerrarSessao() {
+    try {
+        await fetch("/api/logout", { method: "POST" });
+    } catch {
+        // Ignora falha de rede: encerra a sessão localmente de qualquer forma.
+    } finally {
+        notificar("Você saiu da sua conta.", "info");
+        renderizarContaDeslogada();
+    }
+}
+
+verificarSessao();
