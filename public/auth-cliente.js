@@ -1,17 +1,35 @@
 /* =========================================================
-   Invenire Delivery — login e cadastro
-   Comunica com a API (/api/login, /api/cadastro) e trata
-   erros de validação vindos do servidor.
+   Invenire Delivery — tela de autenticação (Entrar / Cadastrar)
+   Comunica com a API (/api/login, /api/cadastro), alterna
+   entre abas, mostra/oculta senha e valida a força da senha
+   em tempo real.
 ========================================================= */
 "use strict";
-
-const CHAVE_TEMA = "invenire-tema";
 
 const $ = (id) => document.getElementById(id);
 
 const toasts = $("toasts");
-const erroForm = $("erro-form");
-const botaoTema = $("alternar-tema");
+const tituloAuth = $("titulo-auth");
+const subtituloAuth = $("subtitulo-auth");
+const abaEntrar = $("aba-entrar");
+const abaCadastrar = $("aba-cadastrar");
+const formLogin = $("form-login");
+const formCadastro = $("form-cadastro");
+const erroFormLogin = $("erro-form-login");
+const erroFormCadastro = $("erro-form-cadastro");
+const botaoGoogle = $("botao-google");
+const linkEsqueci = $("link-esqueci-senha");
+
+const TEXTOS = {
+    entrar: {
+        titulo: "Bem-vindo de volta",
+        subtitulo: "Entre para acompanhar pedidos e finalizar sua compra.",
+    },
+    cadastrar: {
+        titulo: "Crie sua conta",
+        subtitulo: "Cadastre-se para guardar seus dados de entrega e acompanhar pedidos.",
+    },
+};
 
 function notificar(texto, tipo = "sucesso") {
     if (!toasts) return;
@@ -25,33 +43,94 @@ function notificar(texto, tipo = "sucesso") {
     }, 3000);
 }
 
-function mostrarErro(mensagem) {
-    if (!erroForm) return;
-    erroForm.textContent = mensagem;
-    erroForm.hidden = false;
+function mostrarErro(elemento, mensagem) {
+    if (!elemento) return;
+    elemento.textContent = mensagem;
+    elemento.hidden = false;
 }
 
-function esconderErro() {
-    if (!erroForm) return;
-    erroForm.hidden = true;
+function esconderErro(elemento) {
+    if (!elemento) return;
+    elemento.hidden = true;
 }
 
-function aplicarTema(escuro) {
-    document.body.classList.toggle("tema-escuro", escuro);
-    if (botaoTema) botaoTema.setAttribute("aria-pressed", String(escuro));
-    localStorage.setItem(CHAVE_TEMA, escuro ? "escuro" : "claro");
+// ----- Abas Entrar / Cadastrar -----
+function irParaAba(aba) {
+    const ehEntrar = aba === "entrar";
+    abaEntrar.classList.toggle("ativa", ehEntrar);
+    abaEntrar.setAttribute("aria-selected", String(ehEntrar));
+    abaCadastrar.classList.toggle("ativa", !ehEntrar);
+    abaCadastrar.setAttribute("aria-selected", String(!ehEntrar));
+    formLogin.hidden = !ehEntrar;
+    formCadastro.hidden = ehEntrar;
+    tituloAuth.textContent = TEXTOS[aba].titulo;
+    subtituloAuth.textContent = TEXTOS[aba].subtitulo;
+    esconderErro(erroFormLogin);
+    esconderErro(erroFormCadastro);
 }
 
-if (botaoTema) {
-    botaoTema.addEventListener("click", () => {
-        aplicarTema(!document.body.classList.contains("tema-escuro"));
+abaEntrar.addEventListener("click", () => irParaAba("entrar"));
+abaCadastrar.addEventListener("click", () => irParaAba("cadastrar"));
+
+const parametrosUrl = new URLSearchParams(window.location.search);
+irParaAba(parametrosUrl.get("aba") === "cadastrar" ? "cadastrar" : "entrar");
+
+// ----- Mostrar/ocultar senha -----
+document.querySelectorAll(".botao-icone-direita[data-alvo]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+        const campo = $(botao.dataset.alvo);
+        if (!campo) return;
+        const oculto = campo.type === "password";
+        campo.type = oculto ? "text" : "password";
+        botao.textContent = oculto ? "🙈" : "👁";
+        botao.setAttribute("aria-label", oculto ? "Ocultar senha" : "Mostrar senha");
+    });
+});
+
+// ----- Checklist de força da senha -----
+const REGRAS_SENHA = {
+    tamanho: (s) => s.length >= 8,
+    maiuscula: (s) => /[A-Z]/.test(s),
+    numero: (s) => /[0-9]/.test(s),
+    especial: (s) => /[^A-Za-z0-9]/.test(s),
+};
+
+function senhaAtendeTodasRegras(senha) {
+    return Object.values(REGRAS_SENHA).every((teste) => teste(senha));
+}
+
+const campoSenhaCadastro = $("cad-senha");
+if (campoSenhaCadastro) {
+    campoSenhaCadastro.addEventListener("input", () => {
+        const senha = campoSenhaCadastro.value;
+        Object.entries(REGRAS_SENHA).forEach(([regra, teste]) => {
+            const item = document.querySelector(`.item-regra[data-regra="${regra}"]`);
+            if (!item) return;
+            const ok = teste(senha);
+            item.classList.toggle("ok", ok);
+            item.querySelector(".icone").textContent = ok ? "✓" : "○";
+        });
     });
 }
-aplicarTema(localStorage.getItem(CHAVE_TEMA) === "escuro");
 
+// ----- Link "esqueceu sua senha" (sem backend de recuperação ainda) -----
+if (linkEsqueci) {
+    linkEsqueci.addEventListener("click", (e) => {
+        e.preventDefault();
+        notificar("Recuperação de senha em breve. Fale com o suporte por enquanto.", "info");
+    });
+}
+
+// ----- Botão "Entrar com Google" (visual, sem integração ainda) -----
+if (botaoGoogle) {
+    botaoGoogle.addEventListener("click", () => {
+        notificar("Login com Google em breve.", "info");
+    });
+}
+
+// ----- Redirecionamento pós-login -----
 function obterUrlRedirecionamento() {
-    const parametros = new URLSearchParams(window.location.search);
-    const destino = parametros.get("redirecionar");
+    const destino = parametrosUrl.get("redirecionar");
     // Só aceitamos páginas locais do próprio site, nunca URLs externas.
     if (destino && /^[a-zA-Z0-9_-]+\.html$/.test(destino)) {
         return destino;
@@ -75,11 +154,10 @@ async function enviarJson(url, dados) {
 }
 
 // ----- Formulário de login -----
-const formLogin = $("form-login");
 if (formLogin) {
     formLogin.addEventListener("submit", async (e) => {
         e.preventDefault();
-        esconderErro();
+        esconderErro(erroFormLogin);
 
         const email = $("login-email").value.trim();
         const senha = $("login-senha").value;
@@ -89,7 +167,7 @@ if (formLogin) {
         try {
             const { ok, corpo } = await enviarJson("/api/login", { email, senha });
             if (!ok) {
-                mostrarErro(corpo.erro || "Não foi possível entrar. Tente novamente.");
+                mostrarErro(erroFormLogin, corpo.erro || "Não foi possível entrar. Tente novamente.");
                 return;
             }
             notificar(`Bem-vindo, ${corpo.nome.split(" ")[0]}!`);
@@ -97,7 +175,7 @@ if (formLogin) {
                 window.location.href = obterUrlRedirecionamento();
             }, 500);
         } catch {
-            mostrarErro("Falha de conexão com o servidor. Verifique se ele está em execução.");
+            mostrarErro(erroFormLogin, "Falha de conexão com o servidor. Verifique se ele está em execução.");
         } finally {
             botao.disabled = false;
         }
@@ -105,11 +183,10 @@ if (formLogin) {
 }
 
 // ----- Formulário de cadastro -----
-const formCadastro = $("form-cadastro");
 if (formCadastro) {
     formCadastro.addEventListener("submit", async (e) => {
         e.preventDefault();
-        esconderErro();
+        esconderErro(erroFormCadastro);
 
         const nome = $("cad-nome").value.trim();
         const email = $("cad-email").value.trim();
@@ -117,8 +194,12 @@ if (formCadastro) {
         const confirmarSenha = $("cad-confirmar-senha").value;
         const botao = $("botao-cadastro");
 
+        if (!senhaAtendeTodasRegras(senha)) {
+            mostrarErro(erroFormCadastro, "A senha precisa atender a todos os requisitos listados.");
+            return;
+        }
         if (senha !== confirmarSenha) {
-            mostrarErro("As senhas não coincidem.");
+            mostrarErro(erroFormCadastro, "As senhas não coincidem.");
             return;
         }
 
@@ -126,7 +207,7 @@ if (formCadastro) {
         try {
             const { ok, corpo } = await enviarJson("/api/cadastro", { nome, email, senha });
             if (!ok) {
-                mostrarErro(corpo.erro || "Não foi possível concluir o cadastro.");
+                mostrarErro(erroFormCadastro, corpo.erro || "Não foi possível concluir o cadastro.");
                 return;
             }
             notificar(`Conta criada com sucesso, ${corpo.nome.split(" ")[0]}!`);
@@ -134,7 +215,7 @@ if (formCadastro) {
                 window.location.href = obterUrlRedirecionamento();
             }, 500);
         } catch {
-            mostrarErro("Falha de conexão com o servidor. Verifique se ele está em execução.");
+            mostrarErro(erroFormCadastro, "Falha de conexão com o servidor. Verifique se ele está em execução.");
         } finally {
             botao.disabled = false;
         }

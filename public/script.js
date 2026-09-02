@@ -1,8 +1,10 @@
 /* =========================================================
-   Invenire Delivery — lógica da loja
-   Carrinho com quantidades, persistência, frete, cupons,
-   checkout e notificações.
+   Invenire Delivery — lógica do app
+   Navegação por views (Início / Busca / Pedidos / Perfil),
+   carrinho com quantidades, frete, cupons, checkout em tela
+   cheia e autenticação por sessão.
 ========================================================= */
+"use strict";
 
 // ----- Configurações -----
 const CONFIG = {
@@ -19,6 +21,24 @@ const CUPONS = {
     FRETEGRATIS: { tipo: "frete", valor: 0, descricao: "frete grátis" },
 };
 
+// ----- Catálogo -----
+const PRODUTOS = [
+    { nome: "Arroz Tipo 1 - 5kg", categoria: "mercearia", preco: 24.90, imagem: "assets/arroz.jpg", descricao: "Marca Prime, pacote econômico.", destaque: true },
+    { nome: "Leite Integral - 1L", categoria: "bebidas", preco: 5.49, imagem: "assets/leite.jpg", descricao: "Caixa longa vida, super fresco.", destaque: true },
+    { nome: "Detergente Neutro", categoria: "limpeza", preco: 2.99, imagem: "assets/detergente.jpg", descricao: "500ml, limpeza eficiente." },
+    { nome: "Banana Prata - 1kg", categoria: "hortifruti", preco: 7.99, imagem: "assets/banana.jpg", descricao: "Fruta fresca selecionada.", destaque: true },
+    { nome: "Pão Francês - 500g", categoria: "padaria", preco: 8.50, imagem: "assets/pao.jpg", descricao: "Forno do dia, crocante e macio.", destaque: true },
+    { nome: "Feijão Carioca - 1kg", categoria: "mercearia", preco: 9.90, imagem: "assets/feijao.jpg", descricao: "Grãos selecionados para o dia a dia." },
+    { nome: "Suco de Laranja - 1L", categoria: "bebidas", preco: 11.90, imagem: "assets/suco-laranja.jpg", descricao: "Suco integral, sem adição de açúcar." },
+    { nome: "Macarrão Espaguete - 500g", categoria: "mercearia", preco: 6.79, imagem: "assets/macarrao.jpg", descricao: "Massa tradicional para o dia a dia." },
+    { nome: "Maçã Gala - 1kg", categoria: "hortifruti", preco: 12.49, imagem: "assets/maca.jpg", descricao: "Fruta fresca, doce e selecionada." },
+    { nome: "Água Sanitária - 2L", categoria: "limpeza", preco: 7.59, imagem: "assets/agua-sanitaria.jpg", descricao: "Ideal para limpeza pesada e desinfecção." },
+    { nome: "Café Torrado e Moído - 500g", categoria: "mercearia", preco: 18.90, imagem: "assets/cafe.jpg", descricao: "Blend encorpado com aroma intenso.", destaque: true },
+    { nome: "Bolo de Chocolate - 400g", categoria: "padaria", preco: 16.50, imagem: "assets/bolo-chocolate.jpg", descricao: "Macio e pronto para servir." },
+    { nome: "Água Mineral sem Gás - 1,5L", categoria: "bebidas", preco: 3.29, imagem: "assets/agua-mineral.jpg", descricao: "Leve para hidratar o dia todo." },
+    { nome: "Sabão em Pó - 1kg", categoria: "limpeza", preco: 14.20, imagem: "assets/sabao-po.jpg", descricao: "Roupas limpas e perfumadas por mais tempo." },
+];
+
 // ----- Elementos -----
 const $ = (id) => document.getElementById(id);
 
@@ -29,37 +49,39 @@ const descontoEl = $("desconto-carrinho");
 const linhaDesconto = $("linha-desconto");
 const freteEl = $("frete-carrinho");
 const totalCarrinho = $("total-carrinho");
-const quantidadeCarrinho = $("quantidade-carrinho");
+const quantidadeCarrinhoTopo = $("quantidade-carrinho-topo");
 const contadorBadge = $("contador-badge");
-const freteTexto = $("frete-texto");
-const barraFrete = $("barra-frete-preenchida");
+const contadorNav = $("contador-nav");
 
 const campoBusca = $("busca-produto");
 const botaoOrdenar = $("ordenar-preco");
 const contagemProdutos = $("contagem-produtos");
 const semResultados = $("sem-resultados");
+const gradeProdutosBusca = $("grade-produtos");
+const gradeProdutosInicio = $("grade-produtos-inicio");
 
 const mensagemCupom = $("mensagem-cupom");
 const botaoAplicarCupom = $("aplicar-cupom");
 const campoCupomManual = $("cupom-manual");
 const mensagemCarrinho = $("mensagem-carrinho");
 const botaoLimparCarrinho = $("limpar-carrinho");
-const botaoTema = $("alternar-tema");
-const botaoAbrirCarrinho = $("abrir-carrinho");
+const caixaTema = $("alternar-tema");
+const pilulaCarrinho = $("pilula-carrinho");
 const botaoFinalizar = $("finalizar-pedido");
+const botaoVoltarCheckout = $("voltar-checkout");
 
-const botoesFiltro = document.querySelectorAll(".filtro");
-const botoesCupom = document.querySelectorAll(".copiar-cupom");
-const cardsProduto = Array.from(document.querySelectorAll(".card-produto"));
-const imagensProduto = document.querySelectorAll(".imagem-produto");
+const chipsCategoriaInicio = $("chips-categoria-inicio");
+const botoesFiltroBusca = document.querySelectorAll(".chip.filtro");
 
-// Modal
-const modalCheckout = $("modal-checkout");
-const fecharModal = $("fechar-modal");
+// Checkout / confirmação
 const formCheckout = $("form-checkout");
 const checkoutResumo = $("checkout-resumo");
 const erroForm = $("erro-form");
+const confirmacaoConteudo = $("confirmacao-conteudo");
 const toasts = $("toasts");
+
+const navInferior = document.querySelector(".nav-inferior");
+const itensNav = document.querySelectorAll(".item-nav");
 
 // ----- Estado -----
 let carrinho = carregarCarrinho();
@@ -75,6 +97,7 @@ function formatarMoeda(valor) {
 }
 
 function notificar(texto, tipo = "sucesso") {
+    if (!toasts) return;
     const toast = document.createElement("div");
     toast.className = `toast ${tipo}`;
     toast.textContent = texto;
@@ -86,8 +109,53 @@ function notificar(texto, tipo = "sucesso") {
 }
 
 function definirMensagemCarrinho(texto) {
-    mensagemCarrinho.textContent = texto;
+    if (mensagemCarrinho) mensagemCarrinho.textContent = texto;
 }
+
+function escaparHtml(texto) {
+    const div = document.createElement("div");
+    div.textContent = texto;
+    return div.innerHTML;
+}
+
+// =========================================================
+//  Navegação por views
+// =========================================================
+const VIEWS = ["inicio", "busca", "pedidos", "perfil"];
+
+function irPara(view) {
+    VIEWS.forEach((v) => {
+        const secao = $(`view-${v}`);
+        if (secao) secao.hidden = v !== view;
+    });
+    itensNav.forEach((btn) => {
+        const ativo = btn.dataset.view === view;
+        btn.classList.toggle("ativo", ativo);
+        btn.setAttribute("aria-current", ativo ? "page" : "false");
+    });
+    if (view === "perfil") renderizarPerfil();
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+}
+
+function mostrarSubPedido(sub) {
+    const mapa = { carrinho: "sub-carrinho", checkout: "sub-checkout", confirmacao: "sub-confirmacao" };
+    Object.entries(mapa).forEach(([chave, id]) => {
+        const el = $(id);
+        if (el) el.hidden = chave !== sub;
+    });
+}
+
+navInferior.addEventListener("click", (e) => {
+    const botao = e.target.closest(".item-nav");
+    if (!botao) return;
+    if (botao.dataset.view === "pedidos") mostrarSubPedido("carrinho");
+    irPara(botao.dataset.view);
+});
+
+pilulaCarrinho.addEventListener("click", () => {
+    mostrarSubPedido("carrinho");
+    irPara("pedidos");
+});
 
 // =========================================================
 //  Persistência
@@ -108,12 +176,12 @@ function salvarCarrinho() {
 // =========================================================
 //  Carrinho
 // =========================================================
-function adicionarAoCarrinho(nome, preco) {
+function adicionarAoCarrinho(nome, preco, imagem) {
     const existente = carrinho.find((item) => item.nome === nome);
     if (existente) {
         existente.qtd += 1;
     } else {
-        carrinho.push({ nome, preco, qtd: 1 });
+        carrinho.push({ nome, preco, qtd: 1, imagem: imagem || "assets/produto.svg" });
     }
     notificar(`${nome} adicionado ao carrinho.`);
     atualizarCarrinho();
@@ -168,21 +236,17 @@ function renderizarItens() {
         const li = document.createElement("li");
         li.className = "item-carrinho";
         li.innerHTML = `
-            <div class="item-topo">
-                <div>
-                    <div class="item-nome">${item.nome}</div>
-                    <div class="item-preco-unit">${formatarMoeda(item.preco)} / un.</div>
-                </div>
-                <button class="remover-item" data-nome="${item.nome}" aria-label="Remover ${item.nome}">Remover</button>
-            </div>
-            <div class="item-base">
+            <img class="imagem-item" loading="lazy" src="${item.imagem}" alt="">
+            <div class="item-info">
+                <div class="item-nome">${escaparHtml(item.nome)}</div>
+                <div class="item-preco-unit">${formatarMoeda(item.preco)} / un.</div>
                 <div class="controle-qtd">
-                    <button class="qtd-menos" data-nome="${item.nome}" aria-label="Diminuir">−</button>
+                    <button class="qtd-menos" data-nome="${escaparHtml(item.nome)}" aria-label="Diminuir">−</button>
                     <span>${item.qtd}</span>
-                    <button class="qtd-mais" data-nome="${item.nome}" aria-label="Aumentar">+</button>
+                    <button class="qtd-mais" data-nome="${escaparHtml(item.nome)}" aria-label="Aumentar">+</button>
                 </div>
-                <span class="item-subtotal">${formatarMoeda(item.preco * item.qtd)}</span>
             </div>
+            <button class="remover-item" data-nome="${escaparHtml(item.nome)}" aria-label="Remover ${escaparHtml(item.nome)}">✕</button>
         `;
         listaCarrinho.appendChild(li);
     });
@@ -190,93 +254,129 @@ function renderizarItens() {
     carrinhoVazio.hidden = carrinho.length > 0;
 }
 
-function renderizarFrete(subtotal) {
-    if (subtotal === 0) {
-        freteTexto.textContent = "Adicione produtos para ver o frete.";
-        barraFrete.style.width = "0%";
-        return;
-    }
-    if (cupomAtivo === "FRETEGRATIS") {
-        freteTexto.textContent = "🎉 Frete grátis com o cupom aplicado!";
-        barraFrete.style.width = "100%";
-        return;
-    }
-    const restante = CONFIG.freteGratisAcima - subtotal;
-    if (restante <= 0) {
-        freteTexto.textContent = "🎉 Você ganhou frete grátis!";
-        barraFrete.style.width = "100%";
-    } else {
-        freteTexto.textContent = `Faltam ${formatarMoeda(restante)} para frete grátis.`;
-        barraFrete.style.width = `${(subtotal / CONFIG.freteGratisAcima) * 100}%`;
-    }
-}
-
 function atualizarCarrinho() {
     const { subtotal, desconto, frete, total } = calcularTotais();
     const totalItens = carrinho.reduce((s, i) => s + i.qtd, 0);
 
     renderizarItens();
-    renderizarFrete(subtotal);
 
     subtotalEl.textContent = formatarMoeda(subtotal);
     descontoEl.textContent = `- ${formatarMoeda(desconto)}`;
     linhaDesconto.hidden = desconto <= 0;
     freteEl.textContent = frete === 0 ? "Grátis" : formatarMoeda(frete);
     totalCarrinho.textContent = formatarMoeda(total);
-    quantidadeCarrinho.textContent = String(totalItens);
+    quantidadeCarrinhoTopo.textContent = `${totalItens} ${totalItens === 1 ? "item" : "itens"}`;
     contadorBadge.textContent = String(totalItens);
+    contadorNav.textContent = String(totalItens);
+    contadorNav.hidden = totalItens === 0;
 
     salvarCarrinho();
 }
 
-// Delegação de eventos no carrinho
 listaCarrinho.addEventListener("click", (e) => {
-    const nome = e.target.dataset.nome;
+    const nome = e.target.closest("[data-nome]")?.dataset.nome;
     if (!nome) return;
-    if (e.target.classList.contains("qtd-mais")) alterarQuantidade(nome, 1);
-    else if (e.target.classList.contains("qtd-menos")) alterarQuantidade(nome, -1);
-    else if (e.target.classList.contains("remover-item")) removerItem(nome);
+    if (e.target.closest(".qtd-mais")) alterarQuantidade(nome, 1);
+    else if (e.target.closest(".qtd-menos")) alterarQuantidade(nome, -1);
+    else if (e.target.closest(".remover-item")) removerItem(nome);
 });
 
 // =========================================================
-//  Produtos: busca, filtro, ordenação
+//  Produtos: renderização, busca, filtro, ordenação
 // =========================================================
-function exibirProdutos() {
-    const busca = campoBusca.value.trim().toLowerCase();
-    let visiveis = 0;
-
-    cardsProduto.forEach((card) => {
-        const nome = card.dataset.nome;
-        const categoria = card.dataset.categoria;
-        const atendeBusca = nome.includes(busca);
-        const atendeCategoria = categoriaAtiva === "todos" || categoria === categoriaAtiva;
-        const mostrar = atendeBusca && atendeCategoria;
-        card.style.display = mostrar ? "flex" : "none";
-        if (mostrar) visiveis += 1;
-    });
-
-    contagemProdutos.textContent = `${visiveis} produto${visiveis === 1 ? "" : "s"}`;
-    semResultados.hidden = visiveis > 0;
+function cartaoProdutoHtml(produto) {
+    return `
+        <article class="card-produto" data-categoria="${produto.categoria}" data-nome="${produto.nome.toLowerCase()}">
+            <img class="imagem-produto" loading="lazy" src="${produto.imagem}" alt="${escaparHtml(produto.nome)}">
+            <div class="info-produto">
+                <span class="tag-categoria">${capitalizar(produto.categoria)}</span>
+                <h3>${escaparHtml(produto.nome)}</h3>
+                <p>${escaparHtml(produto.descricao)}</p>
+                <span class="preco-produto">${formatarMoeda(produto.preco)}</span>
+            </div>
+            <button class="botao adicionar" data-nome="${escaparHtml(produto.nome)}" data-preco="${produto.preco}" data-imagem="${produto.imagem}" aria-label="Adicionar ${escaparHtml(produto.nome)} ao carrinho">+</button>
+        </article>
+    `;
 }
 
-function ordenarProdutosPorPreco() {
-    const grade = $("grade-produtos");
-    const ordenados = [...cardsProduto].sort((a, b) => {
-        const pa = Number(a.dataset.preco);
-        const pb = Number(b.dataset.preco);
-        return ordenacaoAtiva ? pb - pa : pa - pb;
+function capitalizar(texto) {
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+function renderizarDestaques() {
+    const destaques = PRODUTOS.filter((p) => p.destaque);
+    gradeProdutosInicio.innerHTML = destaques.map(cartaoProdutoHtml).join("");
+}
+
+function exibirProdutosBusca() {
+    const busca = campoBusca.value.trim().toLowerCase();
+    let visiveis = PRODUTOS.filter((p) => {
+        const atendeBusca = p.nome.toLowerCase().includes(busca);
+        const atendeCategoria = categoriaAtiva === "todos" || p.categoria === categoriaAtiva;
+        return atendeBusca && atendeCategoria;
     });
-    ordenados.forEach((card) => grade.appendChild(card));
+
+    visiveis = [...visiveis].sort((a, b) => (ordenacaoAtiva ? b.preco - a.preco : a.preco - b.preco));
+
+    gradeProdutosBusca.innerHTML = visiveis.map(cartaoProdutoHtml).join("");
+    contagemProdutos.textContent = `${visiveis.length} produto${visiveis.length === 1 ? "" : "s"}`;
+    semResultados.hidden = visiveis.length > 0;
+}
+
+// Delegação: botão "Adicionar" tanto nos destaques (Início) quanto na Busca
+document.addEventListener("click", (e) => {
+    const botao = e.target.closest(".botao.adicionar");
+    if (!botao) return;
+    adicionarAoCarrinho(botao.dataset.nome, Number(botao.dataset.preco), botao.dataset.imagem);
+    botao.classList.remove("pulsando");
+    void botao.offsetWidth;
+    botao.classList.add("pulsando");
+});
+
+campoBusca.addEventListener("input", exibirProdutosBusca);
+
+botoesFiltroBusca.forEach((botao) => {
+    botao.addEventListener("click", () => {
+        botoesFiltroBusca.forEach((item) => item.classList.remove("ativo"));
+        botao.classList.add("ativo");
+        categoriaAtiva = botao.dataset.categoria;
+        exibirProdutosBusca();
+    });
+});
+
+botaoOrdenar.addEventListener("click", () => {
     ordenacaoAtiva = !ordenacaoAtiva;
     botaoOrdenar.textContent = ordenacaoAtiva ? "Preço: maior → menor" : "Preço: menor → maior";
-}
+    exibirProdutosBusca();
+});
+
+chipsCategoriaInicio.addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    categoriaAtiva = chip.dataset.categoria;
+    botoesFiltroBusca.forEach((item) => item.classList.toggle("ativo", item.dataset.categoria === categoriaAtiva));
+    exibirProdutosBusca();
+    irPara("busca");
+});
 
 // =========================================================
 //  Cupons
 // =========================================================
+document.querySelectorAll(".copiar-cupom").forEach((botao) => {
+    botao.addEventListener("click", async () => {
+        const cupom = botao.dataset.cupom;
+        try {
+            await navigator.clipboard.writeText(cupom);
+            mensagemCupom.textContent = `Cupom ${cupom} copiado com sucesso!`;
+            notificar(`Cupom ${cupom} copiado!`, "info");
+        } catch {
+            mensagemCupom.textContent = `Cupom disponível: ${cupom}`;
+        }
+    });
+});
+
 function aplicarCupom(codigo) {
     const cupomDigitado = codigo.trim().toUpperCase();
-    const { subtotal } = calcularTotais();
 
     if (!cupomDigitado) {
         definirMensagemCarrinho("Digite um cupom para aplicar.");
@@ -299,6 +399,22 @@ function aplicarCupom(codigo) {
     notificar(`Cupom ${cupomDigitado} aplicado!`);
     atualizarCarrinho();
 }
+
+botaoAplicarCupom.addEventListener("click", () => aplicarCupom(campoCupomManual.value));
+campoCupomManual.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") aplicarCupom(campoCupomManual.value);
+});
+
+botaoLimparCarrinho.addEventListener("click", () => {
+    if (carrinho.length === 0) return;
+    carrinho = [];
+    cupomAtivo = "";
+    localStorage.removeItem(CONFIG.chaveCupom);
+    campoCupomManual.value = "";
+    definirMensagemCarrinho("Carrinho limpo com sucesso.");
+    notificar("Carrinho esvaziado.", "info");
+    atualizarCarrinho();
+});
 
 // =========================================================
 //  Checkout
@@ -323,15 +439,8 @@ function abrirCheckout() {
         <div class="linha-resumo total-linha"><span>Total</span><strong>${formatarMoeda(total)}</strong></div>
     `;
     erroForm.hidden = true;
-    modalCheckout.hidden = false;
-    formCheckout.hidden = false;
-    document.body.style.overflow = "hidden";
-    setTimeout(() => $("cli-nome").focus(), 100);
-}
-
-function fecharCheckout() {
-    modalCheckout.hidden = true;
-    document.body.style.overflow = "";
+    mostrarSubPedido("checkout");
+    setTimeout(() => $("cli-nome")?.focus(), 150);
 }
 
 function confirmarPedido(e) {
@@ -350,146 +459,69 @@ function confirmarPedido(e) {
     const { total } = calcularTotais();
     const numeroPedido = "INV" + Date.now().toString().slice(-6);
 
-    // Limpa o carrinho após o pedido
     carrinho = [];
     cupomAtivo = "";
     localStorage.removeItem(CONFIG.chaveCupom);
     campoCupomManual.value = "";
     atualizarCarrinho();
     definirMensagemCarrinho("");
-
     formCheckout.reset();
-    formCheckout.hidden = true;
-    checkoutResumo.innerHTML = `
-        <div class="confirmacao">
-            <div class="icone-ok">✅</div>
-            <h3>Pedido confirmado!</h3>
-            <p>Obrigado, <strong>${nome}</strong>! Seu pedido está a caminho.</p>
-            <p class="pedido-numero">Pedido ${numeroPedido}</p>
-            <p>Total: <strong>${formatarMoeda(total)}</strong> · ${pagamento}</p>
-            <p>Entrega estimada: até 45 minutos.</p>
-            <button class="botao" id="fechar-confirmacao">Fechar</button>
+
+    confirmacaoConteudo.innerHTML = `
+        <div class="icone-ok"><span aria-hidden="true">✓</span></div>
+        <h2>Pedido confirmado!</h2>
+        <p>Obrigado, <strong>${escaparHtml(nome)}</strong>! Seu pedido está a caminho.</p>
+        <p class="pedido-numero">Pedido ${numeroPedido}</p>
+        <p>Total: <strong>${formatarMoeda(total)}</strong> · ${escaparHtml(pagamento)}</p>
+        <p>Entrega estimada: até 45 minutos.</p>
+        <div class="acoes-confirmacao">
+            <button class="botao primario" id="botao-voltar-inicio">Voltar para o início</button>
         </div>
     `;
+    mostrarSubPedido("confirmacao");
     notificar(`Pedido ${numeroPedido} confirmado! 🎉`);
-    $("fechar-confirmacao").addEventListener("click", fecharCheckout);
+    $("botao-voltar-inicio").addEventListener("click", () => {
+        mostrarSubPedido("carrinho");
+        irPara("inicio");
+    });
 }
+
+botaoFinalizar.addEventListener("click", abrirCheckout);
+botaoVoltarCheckout.addEventListener("click", () => mostrarSubPedido("carrinho"));
+formCheckout.addEventListener("submit", confirmarPedido);
 
 // =========================================================
 //  Tema
 // =========================================================
-function aplicarTema(escuro) {
-    document.body.classList.toggle("tema-escuro", escuro);
-    botaoTema.textContent = escuro ? "☀️ Tema claro" : "🌙 Tema escuro";
-    botaoTema.setAttribute("aria-pressed", String(escuro));
-    localStorage.setItem(CONFIG.chaveTema, escuro ? "escuro" : "claro");
+function aplicarTema(claro) {
+    document.body.classList.toggle("tema-claro", claro);
+    caixaTema.checked = claro;
+    localStorage.setItem(CONFIG.chaveTema, claro ? "claro" : "escuro");
 }
 
-// =========================================================
-//  Fallback de imagens
-// =========================================================
-function configurarFallbackImagens() {
-    imagensProduto.forEach((imagem) => {
-        imagem.addEventListener("error", () => {
-            if (!imagem.dataset.fallbackAplicado) {
-                imagem.dataset.fallbackAplicado = "true";
-                imagem.src = "./assets/produto.svg";
-            }
-        });
-    });
-}
+caixaTema.addEventListener("change", () => aplicarTema(caixaTema.checked));
 
 // =========================================================
-//  Eventos
+//  Fallback de imagens (delegado, pois "error" não borbulha)
 // =========================================================
-cardsProduto.forEach((card) => {
-    const botao = card.querySelector(".adicionar");
-    botao.addEventListener("click", () => {
-        adicionarAoCarrinho(botao.dataset.nome, Number(botao.dataset.preco));
-    });
-});
-
-botoesCupom.forEach((botao) => {
-    botao.addEventListener("click", async () => {
-        const cupom = botao.dataset.cupom;
-        try {
-            await navigator.clipboard.writeText(cupom);
-            mensagemCupom.textContent = `Cupom ${cupom} copiado com sucesso!`;
-            notificar(`Cupom ${cupom} copiado!`, "info");
-        } catch {
-            mensagemCupom.textContent = `Cupom disponível: ${cupom}`;
-        }
-    });
-});
-
-campoBusca.addEventListener("input", exibirProdutos);
-
-botoesFiltro.forEach((botao) => {
-    botao.addEventListener("click", () => {
-        botoesFiltro.forEach((item) => item.classList.remove("ativo"));
-        botao.classList.add("ativo");
-        categoriaAtiva = botao.dataset.categoria;
-        exibirProdutos();
-    });
-});
-
-botaoOrdenar.addEventListener("click", ordenarProdutosPorPreco);
-
-botaoLimparCarrinho.addEventListener("click", () => {
-    if (carrinho.length === 0) return;
-    carrinho = [];
-    cupomAtivo = "";
-    localStorage.removeItem(CONFIG.chaveCupom);
-    campoCupomManual.value = "";
-    definirMensagemCarrinho("Carrinho limpo com sucesso.");
-    notificar("Carrinho esvaziado.", "info");
-    atualizarCarrinho();
-});
-
-botaoAplicarCupom.addEventListener("click", () => aplicarCupom(campoCupomManual.value));
-campoCupomManual.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") aplicarCupom(campoCupomManual.value);
-});
-
-botaoTema.addEventListener("click", () => {
-    aplicarTema(!document.body.classList.contains("tema-escuro"));
-});
-
-botaoAbrirCarrinho.addEventListener("click", () => {
-    $("carrinho").scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-botaoFinalizar.addEventListener("click", abrirCheckout);
-fecharModal.addEventListener("click", fecharCheckout);
-formCheckout.addEventListener("submit", confirmarPedido);
-modalCheckout.addEventListener("click", (e) => {
-    if (e.target === modalCheckout) fecharCheckout();
-});
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modalCheckout.hidden) fecharCheckout();
-});
-
-// =========================================================
-//  Inicialização
-// =========================================================
-function init() {
-    aplicarTema(localStorage.getItem(CONFIG.chaveTema) === "escuro");
-    if (cupomAtivo && carrinho.length > 0) {
-        definirMensagemCarrinho(`Cupom ativo: ${cupomAtivo}.`);
-    }
-    const ano = $("ano-atual");
-    if (ano) ano.textContent = new Date().getFullYear();
-    atualizarCarrinho();
-    exibirProdutos();
-    configurarFallbackImagens();
-}
-
-init();
+document.addEventListener(
+    "error",
+    (e) => {
+        const imagem = e.target;
+        if (!(imagem instanceof HTMLImageElement)) return;
+        if (!imagem.classList.contains("imagem-produto") && !imagem.classList.contains("imagem-item")) return;
+        if (imagem.dataset.fallbackAplicado) return;
+        imagem.dataset.fallbackAplicado = "true";
+        imagem.src = "assets/produto.svg";
+    },
+    true
+);
 
 // =========================================================
 //  Autenticação (login / cadastro / sessão)
 // =========================================================
 const areaConta = $("area-conta");
+const areaPerfil = $("area-perfil");
 window.usuarioLogado = null;
 
 async function verificarSessao() {
@@ -502,27 +534,74 @@ async function verificarSessao() {
             renderizarContaDeslogada();
         }
     } catch {
-        // Sem servidor rodando (ex.: página aberta direto via arquivo) — trata como deslogado.
         renderizarContaDeslogada();
     }
 }
 
+function iniciais(nome) {
+    return nome
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((p) => p[0].toUpperCase())
+        .join("");
+}
+
 function renderizarContaLogada(usuario) {
     window.usuarioLogado = usuario;
-    if (!areaConta) return;
-    const primeiroNome = usuario.nome.split(" ")[0];
-    areaConta.innerHTML = `
-        <span class="conta-saudacao">Olá, ${primeiroNome}</span>
-        <button class="botao secundario" id="botao-sair">Sair</button>
-    `;
-    const botaoSair = $("botao-sair");
-    if (botaoSair) botaoSair.addEventListener("click", encerrarSessao);
+    if (areaConta) {
+        const primeiroNome = usuario.nome.split(" ")[0];
+        areaConta.innerHTML = `
+            <button class="conta-mini" id="botao-conta-mini">
+                <span class="avatar-mini">${iniciais(usuario.nome)}</span>
+                Olá, ${escaparHtml(primeiroNome)}
+            </button>
+        `;
+        $("botao-conta-mini").addEventListener("click", () => irPara("perfil"));
+    }
+    renderizarPerfil();
 }
 
 function renderizarContaDeslogada() {
     window.usuarioLogado = null;
-    if (!areaConta) return;
-    areaConta.innerHTML = `<a href="login.html" class="botao secundario">Entrar</a>`;
+    if (areaConta) {
+        areaConta.innerHTML = `<a href="login.html" class="conta-mini">Entrar</a>`;
+    }
+    renderizarPerfil();
+}
+
+function renderizarPerfil() {
+    if (!areaPerfil) return;
+    if (window.usuarioLogado) {
+        const usuario = window.usuarioLogado;
+        areaPerfil.innerHTML = `
+            <div class="cartao-perfil">
+                <div class="avatar-perfil">${iniciais(usuario.nome)}</div>
+                <div class="nome-perfil">${escaparHtml(usuario.nome)}</div>
+                <div class="email-perfil">${escaparHtml(usuario.email)}</div>
+            </div>
+            <div class="lista-links-perfil">
+                <a class="link-perfil" href="#" id="link-meus-pedidos">Meus pedidos</a>
+                <a class="link-perfil" href="index.html#cupons">Cupons de desconto</a>
+                <button class="link-perfil sair" id="botao-sair" type="button">Sair da conta</button>
+            </div>
+        `;
+        $("link-meus-pedidos").addEventListener("click", (e) => {
+            e.preventDefault();
+            mostrarSubPedido("carrinho");
+            irPara("pedidos");
+        });
+        $("botao-sair").addEventListener("click", encerrarSessao);
+    } else {
+        areaPerfil.innerHTML = `
+            <div class="perfil-deslogado">
+                <div class="avatar-perfil" style="margin: 0 auto;">?</div>
+                <p>Entre na sua conta para acompanhar pedidos e finalizar compras mais rápido.</p>
+                <a href="login.html" class="botao primario">Entrar</a>
+                <a href="cadastro.html" class="botao secundario">Criar conta</a>
+            </div>
+        `;
+    }
 }
 
 async function encerrarSessao() {
@@ -533,7 +612,27 @@ async function encerrarSessao() {
     } finally {
         notificar("Você saiu da sua conta.", "info");
         renderizarContaDeslogada();
+        irPara("inicio");
     }
 }
 
-verificarSessao();
+// =========================================================
+//  Inicialização
+// =========================================================
+function init() {
+    aplicarTema(localStorage.getItem(CONFIG.chaveTema) === "claro");
+    const ano = $("ano-atual");
+    if (ano) ano.textContent = new Date().getFullYear();
+
+    renderizarDestaques();
+    exibirProdutosBusca();
+    atualizarCarrinho();
+
+    if (cupomAtivo && carrinho.length > 0) {
+        definirMensagemCarrinho(`Cupom ativo: ${cupomAtivo}.`);
+    }
+
+    verificarSessao();
+}
+
+init();

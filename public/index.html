@@ -3,296 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Invenire Delivery — supermercado online com entrega rápida, preços baixos e cupons exclusivos.">
-    <meta name="theme-color" content="#0f9d58">
-    <title>Invenire Delivery — Supermercado online</title>
+    <meta name="description" content="Invenire Delivery — o catálogo do seu mercado. Ache o que precisa, receba em até 45 minutos.">
+    <meta name="theme-color" content="#070f0f">
+    <title>Invenire Delivery — o catálogo do seu mercado</title>
     <link rel="icon" href="assets/produto.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
 
-    <header class="topo">
-        <div class="container">
-            <nav class="topo-acoes" aria-label="Ações rápidas">
-                <span class="marca">🛒 Invenire</span>
-                <div class="topo-botoes">
-                    <a href="#promocoes" class="botao destaque">Promoções</a>
-                    <a href="#cupons" class="botao secundario">Cupons</a>
-                    <button class="botao secundario" id="alternar-tema" aria-pressed="false">🌙 Tema escuro</button>
-                    <button class="botao carrinho-atalho" id="abrir-carrinho" aria-label="Abrir carrinho">
-                        🛒 <span class="contador-badge" id="contador-badge">0</span>
-                    </button>
-                    <div class="conta" id="area-conta"></div>
+    <div class="app-shell" id="conteudo">
+
+        <!-- ===== View: Início ===== -->
+        <section class="view" id="view-inicio">
+            <div class="topo-inicio">
+                <div class="linha-marca">
+                    <span class="marca">Invenire</span>
+                    <div class="acoes-topo">
+                        <button class="pilula-carrinho" id="pilula-carrinho" aria-label="Ver carrinho">
+                            🛒 <span id="contador-badge">0</span>
+                        </button>
+                    </div>
                 </div>
-            </nav>
-            <h1>Invenire Delivery</h1>
-            <p>Seu supermercado online com entrega rápida, preço baixo e cupons exclusivos.</p>
-            <div class="metricas">
-                <span>🚀 Entrega em até 45 min</span>
-                <span>📦 +300 produtos</span>
-                <span>💬 Suporte das 8h às 22h</span>
-                <span>🔒 Pagamento seguro</span>
+                <div class="linha-tema">
+                    <div id="area-conta"></div>
+                    <label class="interruptor-tema">
+                        Tema claro
+                        <input type="checkbox" id="alternar-tema" aria-label="Alternar para tema claro">
+                        <span class="trilho-interruptor"></span>
+                    </label>
+                </div>
             </div>
-        </div>
-    </header>
 
-    <main class="container layout" id="conteudo">
-        <section class="conteudo-principal">
-            <section class="bloco barra-controles">
-                <h2>Encontre seu produto</h2>
-                <div class="linha-controles">
-                    <input type="search" id="busca-produto" placeholder="Buscar por nome do produto..." aria-label="Buscar produto">
-                    <button class="botao secundario" id="ordenar-preco">Ordenar por preço</button>
-                </div>
-                <div class="chips filtros" role="group" aria-label="Filtrar por categoria">
-                    <button class="chip filtro ativo" data-categoria="todos">Todos</button>
-                    <button class="chip filtro" data-categoria="hortifruti">Hortifruti</button>
-                    <button class="chip filtro" data-categoria="padaria">Padaria</button>
-                    <button class="chip filtro" data-categoria="bebidas">Bebidas</button>
-                    <button class="chip filtro" data-categoria="limpeza">Limpeza</button>
-                    <button class="chip filtro" data-categoria="mercearia">Mercearia</button>
-                </div>
-            </section>
-
-            <section class="bloco produtos">
-                <div class="cabecalho-bloco">
-                    <h2>Produtos em destaque</h2>
-                    <span class="contagem-produtos" id="contagem-produtos"></span>
-                </div>
-                <div class="grade-produtos" id="grade-produtos">
-                    <article class="card-produto" data-categoria="mercearia" data-nome="arroz tipo 1 - 5kg" data-preco="24.90">
-                        <img class="imagem-produto" loading="lazy" src="assets/arroz.jpg" alt="Pacote de arroz tipo 1">
-                        <span class="tag-categoria">Mercearia</span>
-                        <h3>Arroz Tipo 1 - 5kg</h3>
-                        <p>Marca Prime, pacote econômico.</p>
-                        <strong>R$ 24,90</strong>
-                        <button class="botao adicionar" data-nome="Arroz Tipo 1 - 5kg" data-preco="24.90">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="bebidas" data-nome="leite integral - 1l" data-preco="5.49">
-                        <img class="imagem-produto" loading="lazy" src="assets/leite.jpg" alt="Caixa de leite integral">
-                        <span class="tag-categoria">Bebidas</span>
-                        <h3>Leite Integral - 1L</h3>
-                        <p>Caixa longa vida, super fresco.</p>
-                        <strong>R$ 5,49</strong>
-                        <button class="botao adicionar" data-nome="Leite Integral - 1L" data-preco="5.49">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="limpeza" data-nome="detergente neutro" data-preco="2.99">
-                        <img class="imagem-produto" loading="lazy" src="assets/detergente.jpg" alt="Detergente líquido neutro">
-                        <span class="tag-categoria">Limpeza</span>
-                        <h3>Detergente Neutro</h3>
-                        <p>500ml, limpeza eficiente.</p>
-                        <strong>R$ 2,99</strong>
-                        <button class="botao adicionar" data-nome="Detergente Neutro" data-preco="2.99">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="hortifruti" data-nome="banana prata - 1kg" data-preco="7.99">
-                        <img class="imagem-produto" loading="lazy" src="assets/banana.jpg" alt="Cacho de bananas">
-                        <span class="tag-categoria">Hortifruti</span>
-                        <h3>Banana Prata - 1kg</h3>
-                        <p>Fruta fresca selecionada.</p>
-                        <strong>R$ 7,99</strong>
-                        <button class="botao adicionar" data-nome="Banana Prata - 1kg" data-preco="7.99">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="padaria" data-nome="pão francês - 500g" data-preco="8.50">
-                        <img class="imagem-produto" loading="lazy" src="assets/pao.jpg" alt="Pães franceses frescos">
-                        <span class="tag-categoria">Padaria</span>
-                        <h3>Pão Francês - 500g</h3>
-                        <p>Forno do dia, crocante e macio.</p>
-                        <strong>R$ 8,50</strong>
-                        <button class="botao adicionar" data-nome="Pão Francês - 500g" data-preco="8.50">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="mercearia" data-nome="feijão carioca - 1kg" data-preco="9.90">
-                        <img class="imagem-produto" loading="lazy" src="assets/feijao.jpg" alt="Grãos de feijão carioca">
-                        <span class="tag-categoria">Mercearia</span>
-                        <h3>Feijão Carioca - 1kg</h3>
-                        <p>Grãos selecionados para o dia a dia.</p>
-                        <strong>R$ 9,90</strong>
-                        <button class="botao adicionar" data-nome="Feijão Carioca - 1kg" data-preco="9.90">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="bebidas" data-nome="suco de laranja - 1l" data-preco="11.90">
-                        <img class="imagem-produto" loading="lazy" src="assets/suco-laranja.jpg" alt="Copo de suco de laranja">
-                        <span class="tag-categoria">Bebidas</span>
-                        <h3>Suco de Laranja - 1L</h3>
-                        <p>Suco integral, sem adição de açúcar.</p>
-                        <strong>R$ 11,90</strong>
-                        <button class="botao adicionar" data-nome="Suco de Laranja - 1L" data-preco="11.90">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="mercearia" data-nome="macarrão espaguete - 500g" data-preco="6.79">
-                        <img class="imagem-produto" loading="lazy" src="assets/macarrao.jpg" alt="Macarrão espaguete seco">
-                        <span class="tag-categoria">Mercearia</span>
-                        <h3>Macarrão Espaguete - 500g</h3>
-                        <p>Massa tradicional para receitas do dia a dia.</p>
-                        <strong>R$ 6,79</strong>
-                        <button class="botao adicionar" data-nome="Macarrão Espaguete - 500g" data-preco="6.79">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="hortifruti" data-nome="maçã gala - 1kg" data-preco="12.49">
-                        <img class="imagem-produto" loading="lazy" src="assets/maca.jpg" alt="Maçã gala vermelha">
-                        <span class="tag-categoria">Hortifruti</span>
-                        <h3>Maçã Gala - 1kg</h3>
-                        <p>Fruta fresca, doce e selecionada.</p>
-                        <strong>R$ 12,49</strong>
-                        <button class="botao adicionar" data-nome="Maçã Gala - 1kg" data-preco="12.49">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="limpeza" data-nome="água sanitária - 2l" data-preco="7.59">
-                        <img class="imagem-produto" loading="lazy" src="assets/agua-sanitaria.jpg" alt="Garrafa de água sanitária">
-                        <span class="tag-categoria">Limpeza</span>
-                        <h3>Água Sanitária - 2L</h3>
-                        <p>Ideal para limpeza pesada e desinfecção.</p>
-                        <strong>R$ 7,59</strong>
-                        <button class="botao adicionar" data-nome="Água Sanitária - 2L" data-preco="7.59">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="mercearia" data-nome="café torrado e moído - 500g" data-preco="18.90">
-                        <img class="imagem-produto" loading="lazy" src="assets/cafe.jpg" alt="Café torrado e moído">
-                        <span class="tag-categoria">Mercearia</span>
-                        <h3>Café Torrado e Moído - 500g</h3>
-                        <p>Blend encorpado com aroma intenso.</p>
-                        <strong>R$ 18,90</strong>
-                        <button class="botao adicionar" data-nome="Café Torrado e Moído - 500g" data-preco="18.90">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="padaria" data-nome="bolo de chocolate - 400g" data-preco="16.50">
-                        <img class="imagem-produto" loading="lazy" src="assets/bolo-chocolate.jpg" alt="Bolo de chocolate">
-                        <span class="tag-categoria">Padaria</span>
-                        <h3>Bolo de Chocolate - 400g</h3>
-                        <p>Macio e pronto para servir.</p>
-                        <strong>R$ 16,50</strong>
-                        <button class="botao adicionar" data-nome="Bolo de Chocolate - 400g" data-preco="16.50">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="bebidas" data-nome="água mineral sem gás - 1,5l" data-preco="3.29">
-                        <img class="imagem-produto" loading="lazy" src="assets/agua-mineral.jpg" alt="Garrafa de água mineral">
-                        <span class="tag-categoria">Bebidas</span>
-                        <h3>Água Mineral sem Gás - 1,5L</h3>
-                        <p>Leve para hidratar o dia todo.</p>
-                        <strong>R$ 3,29</strong>
-                        <button class="botao adicionar" data-nome="Água Mineral sem Gás - 1,5L" data-preco="3.29">Adicionar</button>
-                    </article>
-                    <article class="card-produto" data-categoria="limpeza" data-nome="sabão em pó - 1kg" data-preco="14.20">
-                        <img class="imagem-produto" loading="lazy" src="assets/sabao-po.jpg" alt="Sabão em pó">
-                        <span class="tag-categoria">Limpeza</span>
-                        <h3>Sabão em Pó - 1kg</h3>
-                        <p>Roupas limpas e perfumadas por mais tempo.</p>
-                        <strong>R$ 14,20</strong>
-                        <button class="botao adicionar" data-nome="Sabão em Pó - 1kg" data-preco="14.20">Adicionar</button>
-                    </article>
-                </div>
-                <p class="sem-resultados" id="sem-resultados" hidden>Nenhum produto encontrado para sua busca.</p>
-            </section>
-
-            <section class="bloco promocoes" id="promocoes">
-                <h2>Promoções do dia</h2>
-                <ul>
-                    <li>Compre 2 e leve 3 em massas selecionadas.</li>
-                    <li>Frete grátis para compras acima de R$ 120,00.</li>
-                    <li>10% OFF em hortifruti até 18h.</li>
-                </ul>
-            </section>
-
-            <section class="bloco cupons" id="cupons">
-                <h2>Cupons de desconto</h2>
-                <div class="lista-cupons">
-                    <div class="cupom">
-                        <p><strong>BEMVINDO10</strong> - 10% OFF na primeira compra.</p>
-                        <button class="botao copiar-cupom" data-cupom="BEMVINDO10">Copiar cupom</button>
-                    </div>
-                    <div class="cupom">
-                        <p><strong>FRETEGRATIS</strong> - Entrega grátis acima de R$ 80.</p>
-                        <button class="botao copiar-cupom" data-cupom="FRETEGRATIS">Copiar cupom</button>
-                    </div>
-                    <div class="cupom">
-                        <p><strong>ECONOMIA15</strong> - 15% OFF em produtos de limpeza.</p>
-                        <button class="botao copiar-cupom" data-cupom="ECONOMIA15">Copiar cupom</button>
+            <div class="banner-carrossel">
+                <div class="banner-slide">
+                    <div>
+                        <h2>Entrega em até 45 min</h2>
+                        <p>O catálogo do seu mercado, direto na sua porta.</p>
                     </div>
                 </div>
-                <p id="mensagem-cupom" aria-live="polite"></p>
-            </section>
+                <div class="banner-pontos" aria-hidden="true">
+                    <span class="ativo"></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="container-view">
+                <h2 class="titulo-secao">Categorias</h2>
+                <div class="chips" role="group" aria-label="Categorias" id="chips-categoria-inicio">
+                    <button class="chip" data-categoria="hortifruti">Hortifruti</button>
+                    <button class="chip" data-categoria="padaria">Padaria</button>
+                    <button class="chip" data-categoria="bebidas">Bebidas</button>
+                    <button class="chip" data-categoria="limpeza">Limpeza</button>
+                    <button class="chip" data-categoria="mercearia">Mercearia</button>
+                </div>
+
+                <h2 class="titulo-secao">Produtos em destaque</h2>
+                <div class="lista-produtos" id="grade-produtos-inicio"></div>
+
+                <h2 class="titulo-secao">Promoções do dia</h2>
+                <div class="bloco promocoes">
+                    <ul>
+                        <li>Compre 2 e leve 3 em massas selecionadas.</li>
+                        <li>Frete grátis para compras acima de R$ 120,00.</li>
+                        <li>10% OFF em hortifruti até 18h.</li>
+                    </ul>
+                </div>
+
+                <h2 class="titulo-secao">Cupons de desconto</h2>
+                <div class="bloco cupons" id="cupons">
+                    <div class="lista-cupons">
+                        <div class="cupom">
+                            <p><strong>BEMVINDO10</strong> - 10% OFF na primeira compra.</p>
+                            <button class="botao secundario copiar-cupom" data-cupom="BEMVINDO10">Copiar</button>
+                        </div>
+                        <div class="cupom">
+                            <p><strong>FRETEGRATIS</strong> - Entrega grátis acima de R$ 80.</p>
+                            <button class="botao secundario copiar-cupom" data-cupom="FRETEGRATIS">Copiar</button>
+                        </div>
+                        <div class="cupom">
+                            <p><strong>ECONOMIA15</strong> - 15% OFF em produtos de limpeza.</p>
+                            <button class="botao secundario copiar-cupom" data-cupom="ECONOMIA15">Copiar</button>
+                        </div>
+                    </div>
+                    <p id="mensagem-cupom" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <p class="rodape-app">© <span id="ano-atual"></span> Invenire Delivery. Projeto acadêmico.</p>
         </section>
 
-        <aside class="bloco carrinho" id="carrinho">
-            <h2>Seu carrinho</h2>
-
-            <div class="frete-progresso" id="frete-progresso">
-                <p class="frete-texto" id="frete-texto">Adicione produtos para ver o frete.</p>
-                <div class="barra-frete"><span id="barra-frete-preenchida"></span></div>
+        <!-- ===== View: Busca ===== -->
+        <section class="view" id="view-busca" hidden>
+            <div class="topo-sub">
+                <h1>Busca</h1>
             </div>
-
-            <ul id="itens-carrinho"></ul>
-            <p class="carrinho-vazio" id="carrinho-vazio">Seu carrinho está vazio. Que tal adicionar alguns produtos? 🛍️</p>
-
-            <div class="resumo-valores">
-                <div class="linha-resumo"><span>Subtotal</span><span id="subtotal-carrinho">R$ 0,00</span></div>
-                <div class="linha-resumo desconto" id="linha-desconto" hidden><span>Desconto</span><span id="desconto-carrinho">- R$ 0,00</span></div>
-                <div class="linha-resumo"><span>Entrega</span><span id="frete-carrinho">R$ 0,00</span></div>
-                <div class="linha-resumo total-linha"><span>Total</span><strong id="total-carrinho">R$ 0,00</strong></div>
-                <p class="resumo-carrinho">Itens: <strong id="quantidade-carrinho">0</strong></p>
-            </div>
-
-            <div class="acoes-carrinho">
-                <div class="linha-cupom">
-                    <input type="text" id="cupom-manual" placeholder="Digite um cupom" aria-label="Cupom de desconto">
-                    <button class="botao secundario" id="aplicar-cupom">Aplicar</button>
+            <div class="campo-busca-grande">
+                <div class="campo-com-icone">
+                    <span class="icone" aria-hidden="true">🔍</span>
+                    <input type="search" id="busca-produto" placeholder="Buscar por nome do produto..." aria-label="Buscar produto">
                 </div>
-                <button class="botao perigo" id="limpar-carrinho">Limpar carrinho</button>
             </div>
-            <button class="botao finalizar" id="finalizar-pedido">Finalizar pedido</button>
-            <p id="mensagem-carrinho" aria-live="polite"></p>
-        </aside>
-    </main>
-
-    <footer class="rodape">
-        <div class="container rodape-grid">
-            <div>
-                <h3>🛒 Invenire Delivery</h3>
-                <p>Seu supermercado online de confiança.</p>
+            <div class="linha-filtros">
+                <button class="pilula pilula-ordenar" id="ordenar-preco">Ordenar por preço</button>
             </div>
-            <div>
-                <h4>Atendimento</h4>
-                <p>Segunda a sábado, das 8h às 22h.</p>
-                <p>contato@invenire.com.br</p>
+            <div class="chips filtros" role="group" aria-label="Filtrar por categoria">
+                <button class="chip filtro ativo" data-categoria="todos">Todos</button>
+                <button class="chip filtro" data-categoria="hortifruti">Hortifruti</button>
+                <button class="chip filtro" data-categoria="padaria">Padaria</button>
+                <button class="chip filtro" data-categoria="bebidas">Bebidas</button>
+                <button class="chip filtro" data-categoria="limpeza">Limpeza</button>
+                <button class="chip filtro" data-categoria="mercearia">Mercearia</button>
             </div>
-            <div>
-                <h4>Formas de pagamento</h4>
-                <p>Pix, cartão de crédito, débito e dinheiro.</p>
+            <span class="contagem-produtos" id="contagem-produtos"></span>
+            <div class="lista-produtos" id="grade-produtos"></div>
+            <p class="sem-resultados" id="sem-resultados" hidden>Nenhum produto encontrado para sua busca.</p>
+        </section>
+
+        <!-- ===== View: Pedidos (carrinho / checkout / confirmação) ===== -->
+        <section class="view" id="view-pedidos" hidden>
+
+            <div id="sub-carrinho">
+                <div class="topo-sub">
+                    <h1>Seu carrinho</h1>
+                    <span class="contagem-itens" id="quantidade-carrinho-topo">0 itens</span>
+                </div>
+
+                <ul id="itens-carrinho"></ul>
+                <p class="carrinho-vazio" id="carrinho-vazio">Seu carrinho está vazio. Que tal adicionar alguns produtos? 🛍️</p>
+
+                <div class="bloco-cupom">
+                    <div class="linha-cupom">
+                        <input type="text" id="cupom-manual" placeholder="Digite um cupom" aria-label="Cupom de desconto">
+                        <button class="botao secundario" id="aplicar-cupom">Aplicar</button>
+                    </div>
+                </div>
+
+                <div class="resumo-valores">
+                    <div class="linha-resumo"><span>Subtotal</span><span id="subtotal-carrinho">R$ 0,00</span></div>
+                    <div class="linha-resumo desconto" id="linha-desconto" hidden><span>Desconto</span><span id="desconto-carrinho">- R$ 0,00</span></div>
+                    <div class="linha-resumo"><span>Entrega</span><span id="frete-carrinho">R$ 0,00</span></div>
+                    <div class="linha-resumo total-linha"><span>Total</span><strong id="total-carrinho">R$ 0,00</strong></div>
+                </div>
+
+                <div class="acoes-finais">
+                    <button class="botao finalizar" id="finalizar-pedido">Finalizar pedido</button>
+                    <button class="botao perigo" id="limpar-carrinho">Limpar carrinho</button>
+                </div>
+                <p id="mensagem-carrinho" aria-live="polite"></p>
             </div>
-        </div>
-        <p class="rodape-final">© <span id="ano-atual"></span> Invenire Delivery. Projeto acadêmico.</p>
-    </footer>
 
-    <!-- Modal de checkout -->
-    <div class="modal-overlay" id="modal-checkout" hidden>
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-checkout">
-            <button class="modal-fechar" id="fechar-modal" aria-label="Fechar">&times;</button>
-            <h2 id="titulo-checkout">Finalizar pedido</h2>
+            <div id="sub-checkout" hidden>
+                <div class="topo-sub">
+                    <button class="botao-voltar" id="voltar-checkout" aria-label="Voltar ao carrinho">←</button>
+                    <h1>Finalizar pedido</h1>
+                </div>
 
-            <div class="checkout-resumo" id="checkout-resumo"></div>
+                <div class="checkout-resumo" id="checkout-resumo"></div>
 
-            <form id="form-checkout" novalidate>
-                <label>Nome completo
-                    <input type="text" id="cli-nome" required placeholder="Seu nome">
-                </label>
-                <label>Telefone / WhatsApp
-                    <input type="tel" id="cli-telefone" required placeholder="(00) 00000-0000">
-                </label>
-                <label>Endereço de entrega
-                    <input type="text" id="cli-endereco" required placeholder="Rua, número, bairro">
-                </label>
-                <label>Forma de pagamento
-                    <select id="cli-pagamento" required>
-                        <option value="">Selecione...</option>
-                        <option value="Pix">Pix</option>
-                        <option value="Cartão de crédito">Cartão de crédito</option>
-                        <option value="Cartão de débito">Cartão de débito</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                    </select>
-                </label>
-                <p class="erro-form" id="erro-form" hidden></p>
-                <button type="submit" class="botao finalizar">Confirmar pedido</button>
-            </form>
-        </div>
+                <form id="form-checkout" novalidate>
+                    <label>Nome completo
+                        <input type="text" id="cli-nome" required placeholder="Seu nome">
+                    </label>
+                    <label>Telefone / WhatsApp
+                        <input type="tel" id="cli-telefone" required placeholder="(00) 00000-0000">
+                    </label>
+                    <label>Endereço de entrega
+                        <input type="text" id="cli-endereco" required placeholder="Rua, número, bairro">
+                    </label>
+                    <label>Forma de pagamento
+                        <select id="cli-pagamento" required>
+                            <option value="">Selecione...</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Cartão de crédito">Cartão de crédito</option>
+                            <option value="Cartão de débito">Cartão de débito</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                        </select>
+                    </label>
+                    <p class="erro-form" id="erro-form" hidden></p>
+                    <button type="submit" class="botao finalizar">Confirmar pedido</button>
+                </form>
+            </div>
+
+            <div id="sub-confirmacao" hidden>
+                <div class="confirmacao" id="confirmacao-conteudo"></div>
+            </div>
+        </section>
+
+        <!-- ===== View: Perfil ===== -->
+        <section class="view" id="view-perfil" hidden>
+            <div class="topo-sub">
+                <h1>Perfil</h1>
+            </div>
+            <div id="area-perfil"></div>
+        </section>
+
+        <nav class="nav-inferior" aria-label="Navegação principal">
+            <button class="item-nav ativo" data-view="inicio" aria-current="page">
+                <span class="icone-nav" aria-hidden="true">🏠</span>
+                Início
+            </button>
+            <button class="item-nav" data-view="busca">
+                <span class="icone-nav" aria-hidden="true">🔍</span>
+                Busca
+            </button>
+            <button class="item-nav" data-view="pedidos">
+                <span class="icone-nav" aria-hidden="true">🛍️</span>
+                Pedidos
+                <span class="contador-nav" id="contador-nav" hidden>0</span>
+            </button>
+            <button class="item-nav" data-view="perfil">
+                <span class="icone-nav" aria-hidden="true">👤</span>
+                Perfil
+            </button>
+        </nav>
     </div>
 
-    <!-- Container de notificações -->
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <script src="script.js"></script>

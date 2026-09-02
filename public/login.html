@@ -3,48 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Entre na sua conta Invenire Delivery.">
-    <meta name="theme-color" content="#0f9d58">
-    <title>Entrar — Invenire Delivery</title>
+    <meta name="description" content="Entre ou crie sua conta na Invenire Delivery.">
+    <meta name="theme-color" content="#070f0f">
+    <title>Entrar ou cadastrar — Invenire Delivery</title>
     <link rel="icon" href="assets/produto.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
 
-    <header class="topo">
-        <div class="container">
-            <nav class="topo-acoes" aria-label="Ações rápidas">
-                <a href="index.html" class="marca">🛒 Invenire</a>
-                <div class="topo-botoes">
-                    <button class="botao secundario" id="alternar-tema" aria-pressed="false">🌙 Tema escuro</button>
-                </div>
-            </nav>
-            <h1>Bem-vindo de volta</h1>
-            <p>Entre na sua conta para finalizar suas compras.</p>
+    <main class="tela-auth" id="conteudo">
+        <div class="cabecalho-auth">
+            <span class="marca">Invenire</span>
+            <p class="subtitulo-marca">Delivery</p>
+            <h1 id="titulo-auth">Bem-vindo de volta</h1>
+            <p id="subtitulo-auth">Entre para acompanhar pedidos e finalizar sua compra.</p>
         </div>
-    </header>
 
-    <main class="container pagina-auth" id="conteudo">
-        <section class="bloco cartao-auth">
-            <h2>Entrar</h2>
-            <form id="form-login" novalidate>
-                <label>E-mail
-                    <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="voce@email.com">
-                </label>
-                <label>Senha
+        <div class="abas-auth" role="tablist" aria-label="Entrar ou cadastrar">
+            <button class="aba-auth ativa" id="aba-entrar" data-aba="entrar" role="tab" aria-selected="true" type="button">Entrar</button>
+            <button class="aba-auth" id="aba-cadastrar" data-aba="cadastrar" role="tab" aria-selected="false" type="button">Cadastrar</button>
+        </div>
+
+        <form class="formulario-auth" id="form-login" novalidate>
+            <label>E-mail
+                <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="voce@email.com">
+            </label>
+            <label>Senha
+                <span class="campo-com-icone">
                     <input type="password" id="login-senha" name="senha" required autocomplete="current-password" placeholder="Sua senha">
-                </label>
-                <p class="erro-form" id="erro-form" hidden></p>
-                <button type="submit" class="botao" id="botao-login">Entrar</button>
-            </form>
-            <p class="texto-auxiliar-auth">
-                Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a>
-            </p>
-        </section>
+                    <button type="button" class="botao-icone-direita" data-alvo="login-senha" aria-label="Mostrar senha">👁</button>
+                </span>
+            </label>
+            <p class="link-esqueci"><a href="#" id="link-esqueci-senha">Esqueceu sua senha?</a></p>
+            <p class="erro-form" id="erro-form-login" hidden></p>
+            <button type="submit" class="botao destaque" id="botao-login">Entrar</button>
+        </form>
+
+        <form class="formulario-auth" id="form-cadastro" novalidate hidden>
+            <label>Nome completo
+                <input type="text" id="cad-nome" name="nome" required autocomplete="name" placeholder="Seu nome">
+            </label>
+            <label>E-mail
+                <input type="email" id="cad-email" name="email" required autocomplete="email" placeholder="voce@email.com">
+            </label>
+            <label>Senha
+                <span class="campo-com-icone">
+                    <input type="password" id="cad-senha" name="senha" required autocomplete="new-password" placeholder="Crie uma senha">
+                    <button type="button" class="botao-icone-direita" data-alvo="cad-senha" aria-label="Mostrar senha">👁</button>
+                </span>
+            </label>
+            <div class="checklist-senha" id="checklist-senha">
+                <span class="item-regra" data-regra="tamanho"><span class="icone" aria-hidden="true">○</span> Pelo menos 8 caracteres</span>
+                <span class="item-regra" data-regra="maiuscula"><span class="icone" aria-hidden="true">○</span> Uma letra maiúscula</span>
+                <span class="item-regra" data-regra="numero"><span class="icone" aria-hidden="true">○</span> Um número</span>
+                <span class="item-regra" data-regra="especial"><span class="icone" aria-hidden="true">○</span> Um caractere especial</span>
+            </div>
+            <label>Confirmar senha
+                <span class="campo-com-icone">
+                    <input type="password" id="cad-confirmar-senha" name="confirmarSenha" required autocomplete="new-password" placeholder="Repita a senha">
+                    <button type="button" class="botao-icone-direita" data-alvo="cad-confirmar-senha" aria-label="Mostrar senha">👁</button>
+                </span>
+            </label>
+            <p class="erro-form" id="erro-form-cadastro" hidden></p>
+            <button type="submit" class="botao destaque" id="botao-cadastro">Criar conta</button>
+        </form>
+
+        <div class="divisor-auth">ou</div>
+        <button type="button" class="botao botao-google" id="botao-google">Entrar com Google (em breve)</button>
+
+        <p class="texto-auxiliar-auth"><a href="index.html">Voltar para o catálogo</a></p>
     </main>
 
     <div class="toasts" id="toasts" aria-live="polite"></div>

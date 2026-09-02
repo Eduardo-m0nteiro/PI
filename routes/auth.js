@@ -12,6 +12,16 @@ const router = express.Router();
 
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// ----- Política de senha (mantida em sincronia com o checklist do cliente) -----
+function senhaAtendePolitica(senha) {
+    return (
+        senha.length >= 8 &&
+        /[A-Z]/.test(senha) &&
+        /[0-9]/.test(senha) &&
+        /[^A-Za-z0-9]/.test(senha)
+    );
+}
+
 // ----- Proteção simples contra força bruta -----
 const LIMITE_TENTATIVAS = 5;
 const JANELA_BLOQUEIO_MS = 15 * 60 * 1000;
@@ -55,8 +65,10 @@ router.post("/cadastro", (req, res) => {
     if (typeof email !== "string" || !REGEX_EMAIL.test(email.trim())) {
         return res.status(400).json({ erro: "Informe um e-mail válido." });
     }
-    if (typeof senha !== "string" || senha.length < 6) {
-        return res.status(400).json({ erro: "A senha deve ter pelo menos 6 caracteres." });
+    if (typeof senha !== "string" || !senhaAtendePolitica(senha)) {
+        return res.status(400).json({
+            erro: "A senha deve ter pelo menos 8 caracteres, com 1 letra maiúscula, 1 número e 1 caractere especial.",
+        });
     }
 
     const emailNormalizado = email.trim().toLowerCase();
