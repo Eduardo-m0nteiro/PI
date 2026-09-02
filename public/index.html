@@ -125,36 +125,6 @@
         <!-- ===== View: Pedidos (carrinho / checkout / confirmação) ===== -->
         <section class="view" id="view-pedidos" hidden>
 
-            <div id="sub-carrinho">
-                <div class="topo-sub">
-                    <h1>Seu carrinho</h1>
-                    <span class="contagem-itens" id="quantidade-carrinho-topo">0 itens</span>
-                </div>
-
-                <ul id="itens-carrinho"></ul>
-                <p class="carrinho-vazio" id="carrinho-vazio">Seu carrinho está vazio. Que tal adicionar alguns produtos? 🛍️</p>
-
-                <div class="bloco-cupom">
-                    <div class="linha-cupom">
-                        <input type="text" id="cupom-manual" placeholder="Digite um cupom" aria-label="Cupom de desconto">
-                        <button class="botao secundario" id="aplicar-cupom">Aplicar</button>
-                    </div>
-                </div>
-
-                <div class="resumo-valores">
-                    <div class="linha-resumo"><span>Subtotal</span><span id="subtotal-carrinho">R$ 0,00</span></div>
-                    <div class="linha-resumo desconto" id="linha-desconto" hidden><span>Desconto</span><span id="desconto-carrinho">- R$ 0,00</span></div>
-                    <div class="linha-resumo"><span>Entrega</span><span id="frete-carrinho">R$ 0,00</span></div>
-                    <div class="linha-resumo total-linha"><span>Total</span><strong id="total-carrinho">R$ 0,00</strong></div>
-                </div>
-
-                <div class="acoes-finais">
-                    <button class="botao finalizar" id="finalizar-pedido">Finalizar pedido</button>
-                    <button class="botao perigo" id="limpar-carrinho">Limpar carrinho</button>
-                </div>
-                <p id="mensagem-carrinho" aria-live="polite"></p>
-            </div>
-
             <div id="sub-checkout" hidden>
                 <div class="topo-sub">
                     <button class="botao-voltar" id="voltar-checkout" aria-label="Voltar ao carrinho">←</button>
@@ -199,6 +169,36 @@
             </div>
             <div id="area-perfil"></div>
         </section>
+
+        <aside class="coluna-carrinho" id="coluna-carrinho" hidden>
+                <div class="topo-sub">
+                    <h1>Seu carrinho</h1>
+                    <span class="contagem-itens" id="quantidade-carrinho-topo">0 itens</span>
+                </div>
+
+                <ul id="itens-carrinho"></ul>
+                <p class="carrinho-vazio" id="carrinho-vazio">Seu carrinho está vazio. Que tal adicionar alguns produtos? 🛍️</p>
+
+                <div class="bloco-cupom">
+                    <div class="linha-cupom">
+                        <input type="text" id="cupom-manual" placeholder="Digite um cupom" aria-label="Cupom de desconto">
+                        <button class="botao secundario" id="aplicar-cupom">Aplicar</button>
+                    </div>
+                </div>
+
+                <div class="resumo-valores">
+                    <div class="linha-resumo"><span>Subtotal</span><span id="subtotal-carrinho">R$ 0,00</span></div>
+                    <div class="linha-resumo desconto" id="linha-desconto" hidden><span>Desconto</span><span id="desconto-carrinho">- R$ 0,00</span></div>
+                    <div class="linha-resumo"><span>Entrega</span><span id="frete-carrinho">R$ 0,00</span></div>
+                    <div class="linha-resumo total-linha"><span>Total</span><strong id="total-carrinho">R$ 0,00</strong></div>
+                </div>
+
+                <div class="acoes-finais">
+                    <button class="botao finalizar" id="finalizar-pedido">Finalizar pedido</button>
+                    <button class="botao perigo" id="limpar-carrinho">Limpar carrinho</button>
+                </div>
+                <p id="mensagem-carrinho" aria-live="polite"></p>
+        </aside>
 
         <nav class="nav-inferior" aria-label="Navegação principal">
             <button class="item-nav ativo" data-view="inicio" aria-current="page">

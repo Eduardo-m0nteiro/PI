@@ -120,10 +120,22 @@ function escaparHtml(texto) {
 
 // =========================================================
 //  Navegação por views
+//
+//  No mobile, a coluna do carrinho (#coluna-carrinho) funciona como
+//  mais uma "aba" em tela cheia: só aparece quando o usuário toca em
+//  "Pedidos" e o sub-estado é "carrinho". No desktop (>= 900px), o
+//  CSS força essa mesma coluna a ficar sempre visível como uma
+//  sidebar fixa, independente da view principal ativa — por isso ela
+//  vive fora das 4 views, como uma irmã delas dentro do .app-shell.
 // =========================================================
 const VIEWS = ["inicio", "busca", "pedidos", "perfil"];
+const cartColuna = $("coluna-carrinho");
 
-function irPara(view) {
+function ehDesktop() {
+    return window.matchMedia("(min-width: 900px)").matches;
+}
+
+function ativarViewPrincipal(view) {
     VIEWS.forEach((v) => {
         const secao = $(`view-${v}`);
         if (secao) secao.hidden = v !== view;
@@ -133,27 +145,51 @@ function irPara(view) {
         btn.classList.toggle("ativo", ativo);
         btn.setAttribute("aria-current", ativo ? "page" : "false");
     });
+}
+
+function irPara(view) {
+    ativarViewPrincipal(view);
+    if (view === "pedidos") {
+        mostrarSubPedido("carrinho");
+    } else {
+        // No mobile isso esconde o carrinho; no desktop o CSS mantém a
+        // sidebar visível de qualquer forma, então não tem efeito.
+        cartColuna.hidden = true;
+    }
     if (view === "perfil") renderizarPerfil();
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
 }
 
 function mostrarSubPedido(sub) {
-    const mapa = { carrinho: "sub-carrinho", checkout: "sub-checkout", confirmacao: "sub-confirmacao" };
-    Object.entries(mapa).forEach(([chave, id]) => {
-        const el = $(id);
-        if (el) el.hidden = chave !== sub;
-    });
+    ativarViewPrincipal("pedidos");
+    const mostrandoFormulario = sub !== "carrinho";
+    $("view-pedidos").hidden = !mostrandoFormulario;
+    $("sub-checkout").hidden = sub !== "checkout";
+    $("sub-confirmacao").hidden = sub !== "confirmacao";
+    // Mobile: esconde o carrinho ao entrar em checkout/confirmação (o
+    // formulário toma a tela toda). Desktop: CSS ignora este estado e
+    // mantém a coluna do carrinho sempre visível ao lado.
+    cartColuna.hidden = mostrandoFormulario;
 }
 
 navInferior.addEventListener("click", (e) => {
     const botao = e.target.closest(".item-nav");
     if (!botao) return;
-    if (botao.dataset.view === "pedidos") mostrarSubPedido("carrinho");
-    irPara(botao.dataset.view);
+    const view = botao.dataset.view;
+    if (view === "pedidos" && ehDesktop()) {
+        // No desktop o carrinho já está sempre visível na lateral —
+        // só rolamos a página até ele em vez de trocar o conteúdo principal.
+        cartColuna.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
+    irPara(view);
 });
 
 pilulaCarrinho.addEventListener("click", () => {
-    mostrarSubPedido("carrinho");
+    if (ehDesktop()) {
+        cartColuna.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
     irPara("pedidos");
 });
 
@@ -481,7 +517,6 @@ function confirmarPedido(e) {
     mostrarSubPedido("confirmacao");
     notificar(`Pedido ${numeroPedido} confirmado! 🎉`);
     $("botao-voltar-inicio").addEventListener("click", () => {
-        mostrarSubPedido("carrinho");
         irPara("inicio");
     });
 }
