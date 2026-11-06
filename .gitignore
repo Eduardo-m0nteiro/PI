@@ -1,3 +1,5 @@
 .claude/
 node_modules/
-data/
+/data/
+client/node_modules/
+client/dist/
