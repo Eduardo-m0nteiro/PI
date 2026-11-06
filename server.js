@@ -68,10 +68,19 @@ app.use(
 // ----- API -----
 app.use("/api", rotasAuth);
 
-// ----- Site estático (index.html, login.html, script.js, assets, etc.) -----
-// Servimos apenas a pasta "public": o código do servidor (server.js, db.js,
-// routes/, node_modules) nunca fica acessível pelo navegador.
-app.use(express.static(path.join(__dirname, "public")));
+// ----- Front-end (React/Vite) -----
+// Servimos apenas o build em client/dist: o código do servidor (server.js,
+// db.js, routes/, node_modules) nunca fica acessível pelo navegador.
+// Em desenvolvimento, use `npm run dev` (Vite em :5173 com proxy para /api).
+const pastaFront = path.join(__dirname, "client", "dist");
+app.use(express.static(pastaFront));
+app.get(/^\/(?!api\/).*/, (req, res) => {
+    const index = path.join(pastaFront, "index.html");
+    if (!fs.existsSync(index)) {
+        return res.status(503).send("Front-end não compilado. Rode `npm run build`.");
+    }
+    res.sendFile(index);
+});
 
 // ----- Tratamento de erros da API -----
 app.use("/api", (erro, req, res, next) => {
