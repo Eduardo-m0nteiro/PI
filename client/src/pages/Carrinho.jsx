@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import { IconLeaf } from "../components/Icons";
 import Quantidade from "../components/Quantidade";
 import Voltar from "../components/Voltar";
 import { formatarMoeda, imagemFallback } from "../utils";
@@ -50,13 +51,15 @@ export default function Carrinho() {
                         ))}
                     </ul>
 
-                    <aside className="painel-escuro">
-                        <p className="economia">Você economizou {formatarMoeda(economia)}</p>
+                    <aside className="resumo-carrinho">
+                        <div className="painel-economia">
+                        <p className="economia"><IconLeaf /> Você economizou {formatarMoeda(economia)}</p>
                         <p>
                             {modo === "dividida"
                                 ? "Comparando sua compra em um só mercado que contém opções mais caras."
                                 : `Comprando tudo no ${mercadoUnico}, o mercado mais barato para este carrinho.`}
                         </p>
+                        </div>
                         <div className="painel-total"><span>Subtotal</span><strong>{formatarMoeda(resumo.subtotal)}</strong></div>
                         <button className="botao amarelo" onClick={finalizar}>Finalizar pedido</button>
                         <button className="link-limpar" onClick={() => { limpar(); notificar("Carrinho esvaziado.", "info"); }}>Limpar carrinho</button>

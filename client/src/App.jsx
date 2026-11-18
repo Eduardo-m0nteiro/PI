@@ -5,6 +5,7 @@ import Carrinho from "./pages/Carrinho";
 import Checkout from "./pages/Checkout";
 import Confirmacao from "./pages/Confirmacao";
 import Inicio from "./pages/Inicio";
+import Lista from "./pages/Lista";
 import Login from "./pages/Login";
 import Perfil from "./pages/Perfil";
 import Produto from "./pages/Produto";
@@ -16,6 +17,7 @@ export default function App() {
                 <Route path="/" element={<Inicio />} />
                 <Route path="/busca" element={<Busca />} />
                 <Route path="/produto/:id" element={<Produto />} />
+                <Route path="/lista" element={<Lista />} />
                 <Route path="/carrinho" element={<Carrinho />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/confirmacao" element={<Confirmacao />} />

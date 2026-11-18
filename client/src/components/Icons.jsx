@@ -25,6 +25,10 @@ export const IconCup = I(<><path d="M6 4h12l-1.4 16H7.4z" /><path d="M6.6 10h10.
 export const IconSpray = I(<><path d="M9 21V10h6v11z" /><path d="M10 10V7h4v3" /><path d="M14 5h4M14 3h3M18 7h2" /></>);
 export const IconSack = I(<><path d="M9 3h6l-1 3c3 2 5 5 5 9a5 5 0 01-5 5h-4a5 5 0 01-5-5c0-4 2-7 5-9z" /><path d="M9.5 6h5" /></>);
 
+export const IconList = I(<><rect x="4" y="3" width="16" height="18" rx="2.5" /><path d="M8 8h8M8 12h8M8 16h4" /></>);
+export const IconTrash = I(<><path d="M4 7h16" /><path d="M9 7V4h6v3" /><path d="M6 7l1 13h10l1-13" /><path d="M10 11v6M14 11v6" /></>, { strokeWidth: 2.2 });
+export const IconLeaf = I(<><path d="M5 19C5 10 10 4 20 4c0 10-5 16-13 16" /><path d="M5 19c3-5 6-8 11-11" /></>, { strokeWidth: 1.8 });
+
 export function IconGoogle(props) {
     return (
         <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>

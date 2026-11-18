@@ -1,5 +1,6 @@
 import { Navigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useLista } from "../context/ListaContext";
 import { ofertas, produtoPorId } from "../data/catalogo";
 import Quantidade from "../components/Quantidade";
 import Voltar from "../components/Voltar";
@@ -9,6 +10,7 @@ export default function Produto() {
     const { id } = useParams();
     const produto = produtoPorId(id);
     const { quantidadeDe, alterar, adicionar } = useCart();
+    const { naLista, adicionarNaLista, removerDaLista } = useLista();
     if (!produto) return <Navigate to="/busca" replace />;
 
     const lista = ofertas(produto);
@@ -39,6 +41,9 @@ export default function Produto() {
                         ) : (
                             <Quantidade valor={qtd} rotulo={produto.nome} onMenos={() => alterar(produto.id, -1)} onMais={() => alterar(produto.id, 1)} />
                         )}
+                        <button className="botao contorno" onClick={() => (naLista(produto.id) ? removerDaLista(produto.id) : adicionarNaLista(produto))}>
+                            {naLista(produto.id) ? "Remover da lista" : "Adicionar à lista"}
+                        </button>
                     </div>
                 </div>
             </div>

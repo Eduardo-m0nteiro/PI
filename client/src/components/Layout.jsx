@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { IconCart, IconHome, IconSearch, IconUser } from "./Icons";
+import { IconCart, IconHome, IconList, IconSearch, IconUser } from "./Icons";
 import Logo from "./Logo";
 
 const ITENS = [
     { to: "/", rotulo: "Início", Icone: IconHome, fim: true },
     { to: "/busca", rotulo: "Busca", Icone: IconSearch },
+    { to: "/lista", rotulo: "Lista", Icone: IconList },
     { to: "/carrinho", rotulo: "Carrinho", Icone: IconCart },
     { to: "/perfil", rotulo: "Perfil", Icone: IconUser },
 ];

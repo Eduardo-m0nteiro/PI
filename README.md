@@ -5,6 +5,7 @@ Loja online que **compara preços entre supermercados**, com login/cadastro reai
 - **Front-end:** React 18 + React Router, compilado com Vite (`client/`).
 - **Back-end:** Node.js + Express (`server.js`, `routes/`), sessão via cookie e SQLite (`better-sqlite3`).
 - **Layout:** mobile primeiro; a partir de 900px de largura a navegação vira menu lateral e o conteúdo se reorganiza em colunas.
+- **Design:** segue o protótipo "Design da solução mobile - Invenire" (Figma): fundo branco, botões laranja (`#FF7E1D`), rodapé marinho (`#17182C`) com cinco abas (Início, Busca, Lista, Carrinho, Perfil), campos cinza e cartões brancos com sombra. Menor preço em verde e maior preço em vermelho.
 
 ## Requisitos
 
@@ -62,9 +63,9 @@ client/
     style.css          Estilos (paleta, mobile e desktop)
     utils.js           Formatação de moeda, storage, fallback de imagem
     data/catalogo.js   Produtos, mercados, categorias, cupons e regras de frete
-    context/           AuthContext (sessão), CartContext (carrinho/totais), ToastContext (avisos)
+    context/           AuthContext (sessão), CartContext (carrinho/totais), ListaContext (lista de compras), ToastContext (avisos)
     components/        Layout (navegação), Logo, Icons, cards e linhas de produto, etc.
-    pages/             Inicio, Busca, Produto, Carrinho, Checkout, Confirmacao, Perfil, Login
+    pages/             Inicio, Busca, Produto, Lista, Carrinho, Checkout, Confirmacao, Perfil, Login
 ```
 
 ### Rotas do front
@@ -74,6 +75,7 @@ client/
 | `/` | Início (saudação, banner, categorias, destaques) |
 | `/busca` | Busca com filtro por categoria e ordenação por preço (`?q=` e `?categoria=`) |
 | `/produto/:id` | Detalhe do produto e "Onde comprar" |
+| `/lista` | Lista de compras: compara o total da lista em cada mercado e mostra o melhor preço |
 | `/carrinho` | Carrinho com modo "Compra dividida" ou "Só um mercado" |
 | `/checkout` | Dados de entrega, pagamento e cupom (exige login) |
 | `/confirmacao` | Pedido confirmado |
@@ -90,7 +92,8 @@ Tudo fica em `client/src/data/catalogo.js`:
 - **Economia:** diferença entre o total no mercado mais caro (tudo em um só lugar) e o total da compra atual.
 - **Frete:** R$ 10,00; grátis a partir de R$ 120,00 ou com o cupom `FRETEGRATIS`.
 - **Cupons:** `BEMVINDO10` (10%), `ECONOMIA15` (15%) e `FRETEGRATIS`, aplicados no checkout.
-- O carrinho e o cupom ficam no `localStorage` do navegador. **Pedidos não são gravados no banco** ainda.
+- **Lista de compras:** produtos adicionados pela tela do produto. Para cada mercado soma o total da lista; o menor total é o "Melhor preço" e a economia é a diferença para o mercado mais caro. "Ver detalhes da comparação" mostra o preço de cada item e permite levar a lista ao carrinho.
+- O carrinho, o cupom e a lista ficam no `localStorage` do navegador. **Pedidos não são gravados no banco** ainda.
 
 ## Onde ficam os dados
 
